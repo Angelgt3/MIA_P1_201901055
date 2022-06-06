@@ -3,7 +3,10 @@
 #include <sstream>
 #include <cstdlib>
 #include <fstream>
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+
+#include "mkfile.cpp"
+#include "mkdisk.cpp"
 
 #include <stdio.h>
 
@@ -14,282 +17,361 @@ class analizar
 public:
     analizar();
     void SE_linea(string linea);
+    void Comandos(string comand,string para[]);
     void leer();
-    void Comandos(string comand,string para[],string valor[]);
-    void para_dato(string datos[]);
 };
 
 analizar::analizar(){
     leer();
 }
 
-void analizar::Comandos(string comand,string para[], string valor[]){
+
+
+void analizar::Comandos(string comand,string para[]){
     
     //OPCIONES
     
     if(comand!="")
     {    
-        cout<<"comando: "+comand<<endl;
+        //cout<<"comando: "+comand<<endl;
         if (comand=="mkdisk"){ //mkdisk
+            int size;
+            string path,name;
             for(size_t i=1; i <20;i++){      
-                if (para[i]=="") //se sale si ya no viene mas atributos u.u
+                if(para[i]=="")
                     break;
-                else if (para[i]=="$size"){
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
 
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$size"){
+                    size=stoi(valor);
                 }
-                else if (para[i]=="$path"){
-                    
+                else if (parametro=="$path"){
+                    path=valor.substr(1,valor.length()-2);
                 }
-                else if (para[i]=="$name"){
-                    
+                else if (parametro=="$name"){
+                    name=valor;
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                //cout<<"parametro: "+para[i]<<endl;
-                //cout<<"valor: "+valor[i]<<endl;
+                cout<<"parametro: "+parametro<<endl;
+                cout<<"valor: "+valor<<endl;
             }
+            mkdisk *mkd=new mkdisk();
+            mkd->crear(size,path,name);
         }else if(comand=="rmdisk"){ //rmdisk
-            for(size_t i=1; i <20;i++){      
-                if (para[i]=="") //se sale si ya no viene mas atributos u.u
+            for(size_t i=1; i <20;i++){     
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
                     break;
-                else if (para[i]=="$path"){
+                else if (parametro=="$path"){
 
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                //cout<<"parametro: "+para[i]<<endl;
-                //cout<<"valor: "+valor[i]<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
             } 
         }else if (comand=="fdisk"){ //fdisk
-            for(size_t i=1; i <20;i++){      
-                if (para[i]=="") //se sale si ya no viene mas atributos u.u
+            for(size_t i=1; i <20;i++){   
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
                     break;
-                else if (para[i]=="$size"){
+                else if (parametro=="$size"){
 
                 }
-                else if (para[i]=="@unit"){
+                else if (parametro=="@unit"){
                     
                 }
-                else if (para[i]=="$path"){
+                else if (parametro=="$path"){
                     
                 }
-                else if (para[i]=="@type"){
+                else if (parametro=="@type"){
                     
                 }
-                else if (para[i]=="@fit"){
+                else if (parametro=="@fit"){
                     
                 }
-                else if (para[i]=="@delete"){
+                else if (parametro=="@delete"){
                     
                 }
-                else if (para[i]=="$name"){
+                else if (parametro=="$name"){
                     
                 }
-                else if (para[i]=="@add"){
+                else if (parametro=="@add"){
                     
                 }
-                else if (para[i]=="@mov"){
+                else if (parametro=="@mov"){
                     
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                //cout<<"parametro: "+para[i]<<endl;
-                //cout<<"valor: "+valor[i]<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
             }
         }else if(comand=="mount"){ //mount
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$path"){
+            for(size_t i=1; i <20;i++){    
 
-                    }
-                    else if (para[i]=="$name"){
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
 
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="unmount"){ //unmount
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id#"){
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$path"){
 
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="mkfs"){ //mkfs
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
-
-                    }
-                    else if (para[i]=="@type"){
-
-                    }
-                    else if (para[i]=="@add"){
-
-                    }
-                    else if (para[i]=="@unit"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="mkfile"){ //mkfile
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
-
-                    }
-                    else if (para[i]=="$path"){
-
-                    }
-                    else if (para[i]=="@p"){
-
-                    }
-                    else if (para[i]=="@size"){
-
-                    }
-                    else if (para[i]=="@cont"){
-
-                    }
-                    else if (para[i]=="$fileid"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    cout<<"parametro: "+para[i]<<endl;
-                    cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="exec"){ //exec
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$path"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="rm"){ //rm
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
-
-                    }
-                    else if (para[i]=="$fileid"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="mkdir"){ //mkdir
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
-
-                    }
-                    else if (para[i]=="$path"){
-
-                    }
-                    else if (para[i]=="@p"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    cout<<"parametro: "+para[i]<<endl;
-                    cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="cp"){ //cp
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
-
-                    }
-                    else if (para[i]=="$path"){
-
-                    }
-                    else if (para[i]=="$dest"){
-
-                    }
-                    else if (para[i]=="$iddest"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
-                } 
-        }else if(comand=="ls"){ //ls
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
-
-                    }
-                    else if (para[i]=="$path"){
-
-                    }
-                    else if (para[i]=="$Order"){
-
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
                 }
+                else if (parametro=="$name"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="unmount"){ //unmount
+            for(size_t i=1; i <20;i++){      
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id#"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="mkfs"){ //mkfs
+            for(size_t i=1; i <20;i++){    
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
+                }
+                else if (parametro=="@type"){
+
+                }
+                else if (parametro=="@add"){
+
+                }
+                else if (parametro=="@unit"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="mkfile"){ //mkfile
+            string path;
+            for(size_t i=1; i <20;i++){    
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
+                }
+                else if (parametro=="$path"){
+                    path=valor;
+                }
+                else if (parametro=="@p"){
+
+                }
+                else if (parametro=="@size"){
+
+                }
+                else if (parametro=="@cont"){
+
+                }
+                else if (parametro=="$fileid"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+            mkfile *mkf= new mkfile();
+            mkf->crear(path);
+        }else if(comand=="exec"){ //exec
+            for(size_t i=1; i <20;i++){     
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$path"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="rm"){ //rm
+            for(size_t i=1; i <20;i++){      
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+                
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
+                }
+                else if (parametro=="$fileid"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="mkdir"){ //mkdir
+            for(size_t i=1; i <20;i++){ 
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
+                }
+                else if (parametro=="$path"){
+
+                }
+                else if (parametro=="@p"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                cout<<"parametro: "+parametro<<endl;
+                cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="cp"){ //cp
+            for(size_t i=1; i <20;i++){    
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
+                }
+                else if (parametro=="$path"){
+
+                }
+                else if (parametro=="$dest"){
+
+                }
+                else if (parametro=="$iddest"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            } 
+        }else if(comand=="ls"){ //ls
+            for(size_t i=1; i <20;i++){      
+
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+                
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
+                }
+                else if (parametro=="$path"){
+
+                }
+                else if (parametro=="$Order"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            }
         }
         else if(comand=="pause"){ //pause
 
         }
         else if(comand=="loss"){ //loss
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$id"){
+            for(size_t i=1; i <20;i++){      
 
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
+
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$id"){
+
                 }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            }
         }
         else if(comand=="rep"){ //rep
-                for(size_t i=1; i <20;i++){      
-                    if (para[i]=="") //se sale si ya no viene mas atributos u.u
-                        break;
-                    else if (para[i]=="$name"){
+            for(size_t i=1; i <20;i++){     
 
-                    }
-                    else if (para[i]=="$path"){
+                int pos=para[i].find("=>"); 
+                string parametro=para[i].substr(0,pos);
+                string valor=para[i].substr(pos+2,para[i].length());
 
-                    }
-                    else if (para[i]=="$id"){
+                if (parametro=="") //se sale si ya no viene mas atributos u.u
+                    break;
+                else if (parametro=="$name"){
 
-                    }
-                    else
-                        cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                    //cout<<"parametro: "+para[i]<<endl;
-                    //cout<<"valor: "+valor[i]<<endl;
                 }
+                else if (parametro=="$path"){
+
+                }
+                else if (parametro=="$id"){
+
+                }
+                else
+                    cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
+            }
         }
         else
             cout<<"COMANDO NO RECONOCIDO"<<endl;
@@ -299,39 +381,20 @@ void analizar::Comandos(string comand,string para[], string valor[]){
     //cout<<"fin de una linea"<<endl;    
 }
 
-
-//separo parametros y valores en diferentes arrays (una linea)
-void analizar::para_dato(string datos[]){
-    string parametros[20];
-    string valores[20];
-    for(size_t i=1; i <20;i++){
-        if (datos[i]=="") //se sale si ya no viene mas atributos u.u
-            break;
-        else{
-            int pos=0;
-            //cout<<datos[i]<<endl;
-            pos=datos[i].find("=>"); 
-            parametros[i]=datos[i].substr(0,pos);
-            valores[i]=datos[i].substr(pos+2,datos[i].length());
-            //cout<<"parametro:" +parametros[i]<<endl;
-            //cout<<"valor: "+valores[i]<<endl;
-            }
-    }   
-    Comandos(datos[0],parametros,valores);
-}
-
 //separo las lineas por espacios
 void analizar::SE_linea(string linea){
-    string datos[20];
-    string palabra;
-    int cont=0;
+    string comand="",palabra,parametros[20];
     stringstream nline(linea);
-    while (getline(nline, palabra, ' ')){
-        //cout << palabra << endl; //separadas en palabras
-        datos[cont]=palabra;
-        cont+=1;
+    int cont=0;
+    while (getline(nline, palabra,' ')){
+        if (comand!=""){
+            parametros[cont]=palabra;
+            cont++;
+        }
+        else
+            comand=palabra;
     }
-    para_dato(datos);
+    Comandos(comand,parametros);
 }
 
 //separo el archivo en lineas
@@ -343,7 +406,10 @@ void analizar::leer(){
         //lo comvierte todo a minuscula
         transform(linea.begin(), linea.end(), linea.begin(), ::tolower);
         //cout << linea << endl; //separadas por linea
-        SE_linea(linea);
+        if(linea.substr(0,2)!="//")
+            SE_linea(linea);
+        
+        
     }
 
 }
