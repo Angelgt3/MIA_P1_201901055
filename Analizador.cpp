@@ -7,6 +7,7 @@
 
 #include "mkfile.cpp"
 #include "mkdisk.cpp"
+#include "rmdisk.cpp"
 
 #include <stdio.h>
 
@@ -15,6 +16,9 @@ using namespace std;
 class analizar
 {
 public:
+    
+    vector<mkdisk> discos;
+
     analizar();
     void SE_linea(string linea);
     void Comandos(string comand,string para[]);
@@ -24,8 +28,6 @@ public:
 analizar::analizar(){
     leer();
 }
-
-
 
 void analizar::Comandos(string comand,string para[]){
     
@@ -37,7 +39,7 @@ void analizar::Comandos(string comand,string para[]){
         if (comand=="mkdisk"){ //mkdisk
             int size;
             string path,name;
-            for(size_t i=1; i <20;i++){      
+            for(size_t i=0; i <20;i++){      
                 if(para[i]=="")
                     break;
                 int pos=para[i].find("=>"); 
@@ -47,7 +49,7 @@ void analizar::Comandos(string comand,string para[]){
                 if (parametro=="") //se sale si ya no viene mas atributos u.u
                     break;
                 else if (parametro=="$size"){
-                    size=stoi(valor);
+                    size=stoi(valor);    
                 }
                 else if (parametro=="$path"){
                     path=valor.substr(1,valor.length()-2);
@@ -57,30 +59,36 @@ void analizar::Comandos(string comand,string para[]){
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                cout<<"parametro: "+parametro<<endl;
-                cout<<"valor: "+valor<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
             }
             mkdisk *mkd=new mkdisk();
             mkd->crear(size,path,name);
+            discos.push_back(*mkd);
         }else if(comand=="rmdisk"){ //rmdisk
-            for(size_t i=1; i <20;i++){     
-
+            string path;
+            
+            for(size_t i=0; i<20;i++){     
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());
+                
 
                 if (parametro=="") //se sale si ya no viene mas atributos u.u
                     break;
                 else if (parametro=="$path"){
-
+                    path=valor.substr(1,valor.length()-2);
+                    break;
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
                 //cout<<"parametro: "+parametro<<endl;
                 //cout<<"valor: "+valor<<endl;
             } 
+            rmdisk *rmd=new rmdisk(path);
+            rmd->~rmdisk();
         }else if (comand=="fdisk"){ //fdisk
-            for(size_t i=1; i <20;i++){   
+            for(size_t i=0; i <20;i++){   
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -121,7 +129,7 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             }
         }else if(comand=="mount"){ //mount
-            for(size_t i=1; i <20;i++){    
+            for(size_t i=0; i <20;i++){    
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -141,7 +149,7 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             } 
         }else if(comand=="unmount"){ //unmount
-            for(size_t i=1; i <20;i++){      
+            for(size_t i=0; i <20;i++){      
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -158,7 +166,7 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             } 
         }else if(comand=="mkfs"){ //mkfs
-            for(size_t i=1; i <20;i++){    
+            for(size_t i=0; i <20;i++){    
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -185,7 +193,7 @@ void analizar::Comandos(string comand,string para[]){
             } 
         }else if(comand=="mkfile"){ //mkfile
             string path;
-            for(size_t i=1; i <20;i++){    
+            for(size_t i=0; i <20;i++){    
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -219,7 +227,7 @@ void analizar::Comandos(string comand,string para[]){
             mkfile *mkf= new mkfile();
             mkf->crear(path);
         }else if(comand=="exec"){ //exec
-            for(size_t i=1; i <20;i++){     
+            for(size_t i=0; i <20;i++){     
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -236,7 +244,7 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             } 
         }else if(comand=="rm"){ //rm
-            for(size_t i=1; i <20;i++){      
+            for(size_t i=0; i <20;i++){      
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -256,7 +264,7 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             } 
         }else if(comand=="mkdir"){ //mkdir
-            for(size_t i=1; i <20;i++){ 
+            for(size_t i=0; i <20;i++){ 
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -279,7 +287,7 @@ void analizar::Comandos(string comand,string para[]){
                 cout<<"valor: "+valor<<endl;
             } 
         }else if(comand=="cp"){ //cp
-            for(size_t i=1; i <20;i++){    
+            for(size_t i=0; i <20;i++){    
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -305,7 +313,7 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             } 
         }else if(comand=="ls"){ //ls
-            for(size_t i=1; i <20;i++){      
+            for(size_t i=0; i <20;i++){      
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -332,7 +340,7 @@ void analizar::Comandos(string comand,string para[]){
 
         }
         else if(comand=="loss"){ //loss
-            for(size_t i=1; i <20;i++){      
+            for(size_t i=0; i <20;i++){      
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -350,7 +358,7 @@ void analizar::Comandos(string comand,string para[]){
             }
         }
         else if(comand=="rep"){ //rep
-            for(size_t i=1; i <20;i++){     
+            for(size_t i=0; i <20;i++){     
 
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
@@ -376,8 +384,8 @@ void analizar::Comandos(string comand,string para[]){
         else
             cout<<"COMANDO NO RECONOCIDO"<<endl;
     }
-
-
+    
+    
     //cout<<"fin de una linea"<<endl;    
 }
 
@@ -394,6 +402,7 @@ void analizar::SE_linea(string linea){
         else
             comand=palabra;
     }
+    
     Comandos(comand,parametros);
 }
 
