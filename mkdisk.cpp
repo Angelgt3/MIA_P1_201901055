@@ -13,10 +13,11 @@ public:
     void crear(int size,string path,string name);
     void acceso(string path);
     void CrearMBR(int tam,string path,string name);
+    ~mkdisk();
 };
 
 typedef struct {
-    char part_status;
+    char part_status='s';
     char part_type;
     char part_fit;
     int part_start;
@@ -110,5 +111,9 @@ void mkdisk::CrearMBR(int tam,string path,string name){
     cout<<mbr2.disk_signature<<endl;
     cout<<mbr2.fecha_creacion<<endl;
     */
+
+}
+
+mkdisk::~mkdisk(){
 
 }
