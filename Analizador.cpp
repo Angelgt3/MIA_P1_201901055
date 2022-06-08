@@ -88,6 +88,9 @@ void analizar::Comandos(string comand,string para[]){
             rmdisk *rmd=new rmdisk(path);
             rmd->~rmdisk();
         }else if (comand=="fdisk"){ //fdisk
+            int size,add;
+            char unit='k',type='p';
+            string path,fit="wf",dilit,name,mov;
             for(size_t i=0; i <20;i++){   
 
                 int pos=para[i].find("=>"); 
@@ -97,36 +100,51 @@ void analizar::Comandos(string comand,string para[]){
                 if (parametro=="") //se sale si ya no viene mas atributos u.u
                     break;
                 else if (parametro=="$size"){
-
+                    if(stoi(valor)>0)
+                        size=stoi(valor);
+                    else
+                        cout<<"ERROR: El valor de size no cumple los requerimientos";
                 }
                 else if (parametro=="@unit"){
-                    
+                    if(valor=="k" || valor=="b" || valor=="m")
+                        unit=valor[0];
+                    else
+                        cout<<"ERROR: El valor de unit no cumple los requerimientos";
                 }
                 else if (parametro=="$path"){
-                    
+                    path=valor.substr(1,valor.length()-2);
                 }
                 else if (parametro=="@type"){
-                    
+                    if(valor=="p" || valor=="e" || valor=="l")
+                        type=valor[0];
+                    else
+                        cout<<"ERROR: El valor de type no cumple los requerimientos";
                 }
                 else if (parametro=="@fit"){
-                    
+                    if(valor=="bf" || valor=="ff" || valor=="wf")
+                        fit=valor;
+                    else
+                        cout<<"ERROR: El valor de fit no cumple los requerimientos";
                 }
                 else if (parametro=="@delete"){
-                    
+                    if(valor=="fast" || valor=="full" )
+                        fit=valor;
+                    else
+                        cout<<"ERROR: El valor de delete no cumple los requerimientos";
                 }
                 else if (parametro=="$name"){
-                    
+                    name=valor;
                 }
                 else if (parametro=="@add"){
-                    
+                    add=stoi(valor);
                 }
                 else if (parametro=="@mov"){
                     
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                //cout<<"parametro: "+parametro<<endl;
-                //cout<<"valor: "+valor<<endl;
+                cout<<"parametro: "+parametro<<endl;
+                cout<<"valor: "+valor<<endl;
             }
         }else if(comand=="mount"){ //mount
             for(size_t i=0; i <20;i++){    

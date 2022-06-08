@@ -16,7 +16,7 @@ rmdisk::rmdisk(string path){
     cout<<"Esta seguro que desea eliminar "+path+" (S/N)"<<endl;
     string res;
     cin>>res;
-    if (res=="s" or res=="S"){
+    if (res=="s" || res=="S"){
         string comand="rm "+path;
         system(comand.c_str());
     }

@@ -1,4 +1,5 @@
 #include<iostream>
+#include <fstream> 
 #include<stdlib.h>
 #include "time.h"
 #include <stdio.h>
@@ -11,14 +12,8 @@ public:
     mkdisk();
     void crear(int size,string path,string name);
     void acceso(string path);
-    void CrearMBR(int tam);
+    void CrearMBR(int tam,string path,string name);
 };
-
-typedef struct {
-    int tamanio;
-    time_t fecha_creacion;
-    int disk_signature;
-}MBR;
 
 typedef struct {
     char part_status;
@@ -30,6 +25,20 @@ typedef struct {
     
 }PARTITION;
 
+typedef struct {
+    int tamanio;
+    time_t fecha_creacion;
+    int disk_signature;
+    PARTITION particiones[4];
+}MBR;
+
+typedef struct {
+    char part_fit;
+    int part_start;
+    int part_size;
+    int part_next;
+    char part_name[16];
+}EBR;
 
 mkdisk::mkdisk(){
 }
@@ -56,15 +65,15 @@ void mkdisk::crear(int size,string path,string name){
         acceso(path);
         //creando binario
         int tam=size*1024;
-        comand = "dd if=/dev/random of="+ path+ name +" count=1024 bs="+to_string(tam);
+        comand = "dd if=/dev/zero of="+ path+ name +" count=1024 bs="+to_string(tam);
         system(comand.c_str());
-        CrearMBR(tam);
+        CrearMBR(tam,path,name);
     }else{
         cout<<"error"<<endl;
     }
 }
 
-void mkdisk::CrearMBR(int tam){
+void mkdisk::CrearMBR(int tam,string path,string name){
     time_t fecha = time(NULL); //obtener la fecha de creacion
     int valor = rand() % 1500; //numero random 0 a 1499
 
@@ -73,4 +82,33 @@ void mkdisk::CrearMBR(int tam){
     mbr.fecha_creacion=fecha;
     mbr.tamanio=tam;
     mbr.disk_signature=valor;
+
+    cout<<""<<endl;
+    cout<<mbr.fecha_creacion<<endl;
+    cout<<mbr.disk_signature<<endl;
+    cout<<mbr.tamanio<<endl;
+    
+    //escribir el mbr en el disco
+    FILE *archivo;
+    archivo=fopen((path+name).c_str(),"r+");
+    
+    fseek(archivo,0, SEEK_SET);
+    fwrite(&mbr,sizeof(mbr),1,archivo);
+    fclose(archivo);
+    
+    /*
+    FILE *arch;
+    arch=fopen((path+name).c_str(),"r");
+    if (arch==NULL)
+        printf("ERROR");
+    MBR mbr2;
+    fseek(arch,0, SEEK_SET);
+    fread(&mbr2, sizeof(mbr2), 1, arch);
+
+    cout<<""<<endl;
+    cout<<mbr2.tamanio<<endl;
+    cout<<mbr2.disk_signature<<endl;
+    cout<<mbr2.fecha_creacion<<endl;
+    */
+
 }
