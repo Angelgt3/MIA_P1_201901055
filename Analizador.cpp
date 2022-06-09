@@ -9,6 +9,8 @@
 #include "mkdisk.cpp"
 #include "rmdisk.cpp"
 #include "fdisk.cpp"
+#include "mount.cpp"
+#include "estructuras.h"
 
 #include <stdio.h>
 
@@ -18,13 +20,15 @@ class analizar
 {
 public:
     
-    vector<mkdisk> discos;
+    vector<Discos> misdiscos;
 
     analizar();
     void SE_linea(string linea);
     void Comandos(string comand,string para[]);
     void leer();
 };
+
+
 
 analizar::analizar(){
     leer();
@@ -65,7 +69,6 @@ void analizar::Comandos(string comand,string para[]){
             }
             mkdisk *mkd=new mkdisk();
             mkd->crear(size,path,name);
-            discos.push_back(*mkd);
             mkd->~mkdisk();
         }else if(comand=="rmdisk"){ //rmdisk
             string path;
@@ -94,10 +97,8 @@ void analizar::Comandos(string comand,string para[]){
             char unit='k',type='p';
             string path,fit="wf",dilit,name,mov;
             for(size_t i=0; i<20 ;i++){  
-                cout<<para[i]<<endl;
                 if(para[i]=="")
                     break;
-                    
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());   
@@ -145,42 +146,60 @@ void analizar::Comandos(string comand,string para[]){
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
-                cout<<"parametro: "+parametro<<endl;
-                cout<<"valor: "+valor<<endl;
+                //cout<<"parametro: "+parametro<<endl;
+                //cout<<"valor: "+valor<<endl;
             }
             fdisk *fd=new fdisk();
             fd->crear(size,unit,path,type,fit,dilit,name,add,mov);
             
         }else if(comand=="mount"){ //mount
+            string path,name;
             for(size_t i=0; i <20;i++){    
-
+                if (para[i]=="") //se sale si ya no viene mas atributos u.u
+                    break;
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());
-
-                if (parametro=="") //se sale si ya no viene mas atributos u.u
-                    break;
-                else if (parametro=="$path"){
-
+                /* condition */
+                if (parametro=="$path"){
+                    path=valor.substr(1,valor.length()-2);                
                 }
                 else if (parametro=="$name"){
-
+                    name=valor;
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
+
                 //cout<<"parametro: "+parametro<<endl;
                 //cout<<"valor: "+valor<<endl;
             } 
+            if(path=="" && name==""){ //mount sin  parametros muestra las particiones montadas
+
+            }else{
+                mount *mou=new mount(); //creo el objeto mount
+                //mou->montar(temp);
+                //discos.push_back(temp);
+                Discos temp;
+                temp=mou->montar(path,name,misdiscos);
+                mou->~mount();//destruyo el objeto
+                if (temp.id=="err")
+                    cout<<"ERROR: particion ya montada";
+                else if (temp.id=="err1")
+                    cout<<"ERROR: disco no encontrado";
+                else
+                    misdiscos.push_back(temp);//lo agrego a mi lista de particiones montadas
+            }
         }else if(comand=="unmount"){ //unmount
             for(size_t i=0; i <20;i++){      
-
+                if (para[i]=="") //se sale si ya no viene mas atributos u.u
+                    break;
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());
 
-                if (parametro=="") //se sale si ya no viene mas atributos u.u
-                    break;
-                else if (parametro=="$id#"){
+                if (parametro=="$id#"){
+
+
 
                 }
                 else

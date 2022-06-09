@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <bits/stdc++.h>
 
+#include "estructuras.h"
+
 using namespace std;
 
 class fdisk
@@ -203,7 +205,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
             }
             else{
                 if(mbr.particiones[i].part_type=='e'){//si hay particion extendida
-                        logica(mbr.particiones[i].part_start,mbr.particiones[i].part_size,path,nsize,fit,name);//Crear logica
+                    logica(mbr.particiones[i].part_start,mbr.particiones[i].part_size,path,nsize,fit,name);//Crear logica
                 }
             }
         }
@@ -211,7 +213,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
     else   
         cout<<"ERRROR: size <=0"<<endl;
 
-/*
+    /*
     //ver las particiones
     FILE *arch;
     arch=fopen((path).c_str(),"r");
@@ -222,6 +224,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
     
     for(size_t i=0; i <4;i++){
         cout<<"--------------------------------------------------------"<<endl;
+        cout<<mbr.disk_signature<<endl;
         cout<<mbr.particiones[i].part_fit<<endl;
         cout<<mbr.particiones[i].part_name<<endl;
         cout<<mbr.particiones[i].part_size<<endl;
@@ -229,40 +232,10 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
         cout<<mbr.particiones[i].part_status<<endl;
         cout<<mbr.particiones[i].part_type<<endl;
         cout<<"--------------------------------------------------------"<<endl;
-        /*       
-        if (mbr.particiones[i].part_type=='e')
-        {
-            int siguiente=0;
-            EBR ebr;
-            FILE *archivo;
-            archivo=fopen(path.c_str(),"r+");
-            fseek(archivo,mbr.particiones[i].part_start,SEEK_SET);
-            fread(&ebr, sizeof(ebr), 1, archivo); // Guarda el ebr del archivo en "ebr"
-            cout<<"--------------------------------------------------------"<<endl;
-            cout<<ebr.part_fit<<endl;
-            cout<<ebr.part_name<<endl;
-            cout<<ebr.part_next<<endl;
-            cout<<ebr.part_size<<endl;
-            cout<<ebr.part_start<<endl;
-            cout<<"--------------------------------------------------------"<<endl;
-            while(siguiente == 0){
-                if (ebr.part_next != -1){ // si hay mas particiones
-                    siguiente = fseek(archivo,ebr.part_next,SEEK_SET);// voy al inicio del siguiente ebr
-                    fread(&ebr, sizeof(ebr), 1, archivo); // leo lo que hay en el espacio
-                    cout<<"--------------------------------------------------------"<<endl;
-                    cout<<ebr.part_fit<<endl;
-                    cout<<ebr.part_name<<endl;
-                    cout<<ebr.part_next<<endl;
-                    cout<<ebr.part_size<<endl;
-                    cout<<ebr.part_start<<endl;
-                    cout<<"--------------------------------------------------------"<<endl;
-                }else{siguiente = -1;}
-            }
-            fclose(archivo);
-        }*/
-    }
-        
+      
+    }      
+    */
 }
-*/
+
 
 fdisk::~fdisk(){}

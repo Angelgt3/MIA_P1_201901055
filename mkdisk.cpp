@@ -4,6 +4,8 @@
 #include "time.h"
 #include <stdio.h>
 
+#include "estructuras.h"
+
 using namespace std;
 
 class mkdisk
@@ -15,31 +17,6 @@ public:
     void CrearMBR(int tam,string path,string name);
     ~mkdisk();
 };
-
-typedef struct {
-    char part_status='s';
-    char part_type;
-    char part_fit;
-    int part_start;
-    int part_size;
-    char part_name[16];
-    
-}PARTITION;
-
-typedef struct {
-    int tamanio;
-    time_t fecha_creacion;
-    int disk_signature;
-    PARTITION particiones[4];
-}MBR;
-
-typedef struct {
-    char part_fit;
-    int part_start;
-    int part_size;
-    int part_next;
-    char part_name[16];
-}EBR;
 
 mkdisk::mkdisk(){
 }
@@ -76,7 +53,7 @@ void mkdisk::crear(int size,string path,string name){
 
 void mkdisk::CrearMBR(int tam,string path,string name){
     time_t fecha = time(NULL); //obtener la fecha de creacion
-    int valor = rand() % 1500; //numero random 0 a 1499
+    int valor = rand() % 1000; //numero random 0 a 1000
 
     //Asignar valores mbr
     MBR mbr;
