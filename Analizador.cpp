@@ -11,6 +11,7 @@
 #include "rmdisk.cpp"
 #include "fdisk.cpp"
 #include "mount.cpp"
+#include "unmount.cpp"
 #include "estructuras.h"
 
 #include <stdio.h>
@@ -78,8 +79,6 @@ void analizar::Comandos(string comand,string para[]){
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());
-                
-
                 if (parametro=="") //se sale si ya no viene mas atributos u.u
                     break;
                 else if (parametro=="$path"){
@@ -150,8 +149,9 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"parametro: "+parametro<<endl;
                 //cout<<"valor: "+valor<<endl;
             }
-            fdisk *fd=new fdisk();
+            fdisk *fd=new fdisk(); //creo objeto fdisk
             fd->crear(size,unit,path,type,fit,dilit,name,add,mov);
+            fd->~fdisk(); //destruyo objeto
             
         }else if(comand=="mount"){ //mount
             string path,name;
@@ -206,11 +206,13 @@ void analizar::Comandos(string comand,string para[]){
                 if (parametro=="$id"+to_string((i+1))){ //$id#
                     for (size_t i = 0; i < misdiscos.size(); i++){ //recorro la lista de las particiones montadas
                         if(misdiscos[i].id==valor){ //encuentro cual hay que desmontar
+                            unmount *unm=new unmount();
+                            unm->desmontar(misdiscos[i].path,misdiscos[i].name); //funcion para cambiar el status de la particion
+                            unm->~unmount();//destruyo el objeto
                             misdiscos.erase(misdiscos.begin()+i); //lo elimino de la lista
                             break;
                         }
                     }
-                    
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
@@ -389,7 +391,7 @@ void analizar::Comandos(string comand,string para[]){
             }
         }
         else if(comand=="pause"){ //pause
-
+            cin.get();
         }
         else if(comand=="loss"){ //loss
             for(size_t i=0; i <20;i++){      
@@ -461,8 +463,7 @@ void analizar::SE_linea(string linea){
 
 //separo el archivo en lineas
 void analizar::leer(){
-
-    ifstream archivo_entrada("entrada.txt");
+    ifstream archivo_entrada("entrada.sh");
     string linea;
     while(getline(archivo_entrada, linea)) {
         //lo comvierte todo a minuscula

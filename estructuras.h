@@ -11,7 +11,7 @@
 using namespace std;
 
 typedef struct {
-    char part_status='s';
+    char part_status='l'; //l=libre , o=ocupada, m=montada
     char part_type;
     char part_fit;
     int part_start;

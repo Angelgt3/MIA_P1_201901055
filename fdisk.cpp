@@ -142,17 +142,17 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
         int nsize;
         if (unit=='b')//nuevo tamaño en bytes
             nsize=size;
-        else if(unit=='k')
+        else if(unit=='k')//kilobyte a bytes
             nsize=size*1024;
-        else if(unit=='m')
-            nsize=size*1024*1024;
+        else if(unit=='m')//megabyte a bytes
+            nsize=size*1024*1024; 
 
         
         
         for(size_t i=0; i <4;i++){ //busco particion disponible
             if (type=='p'){//Es una particion primaria
-                if (mbr.particiones[i].part_status=='s'){//Encontro una particion disponible - ingresa los datos
-                    mbr.particiones[i].part_status='n'; // s=libre n=ocupada
+                if (mbr.particiones[i].part_status=='l'){//Encontro una particion disponible - ingresa los datos
+                    mbr.particiones[i].part_status='o'; //l=libre , o=ocupada, m=montada
                     mbr.particiones[i].part_fit=fit[0];
                     strcpy(mbr.particiones[i].part_name , name.c_str());//convirtiendo una cadena a un vector char
                     mbr.particiones[i].part_type=type;
@@ -180,8 +180,8 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
                 }
                 if(sepuede){ 
                     for (size_t k = 0; k < 4; k++){// hay espacio
-                        if (mbr.particiones[k].part_status=='s'){//Encontro una particion disponible - ingresa los datos
-                            mbr.particiones[k].part_status='n'; // s=libre n=ocupada
+                        if (mbr.particiones[k].part_status=='l'){//Encontro una particion disponible - ingresa los datos
+                            mbr.particiones[k].part_status='o'; //l=libre , o=ocupada, m=montada
                             mbr.particiones[k].part_fit=fit[0];
                             strcpy(mbr.particiones[k].part_name , name.c_str());//convirtiendo una cadena a un vector char
                             mbr.particiones[k].part_type=type;
