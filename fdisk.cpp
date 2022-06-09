@@ -11,6 +11,8 @@ class fdisk
 {
 public:
     fdisk();
+    void borrar(string dilit,string path,string name);
+    void agregar(int add,char unit,string path,string name);
     void crear(int size, char unit, string path,char type, string fit, string dilit, string name,int add, string mov);
     void logica(int inicio, int tamanio,string path,int size,string fit,string name);
     ~fdisk();
@@ -18,6 +20,59 @@ public:
 
 fdisk::fdisk(){
 
+}
+
+//parametro delete
+void fdisk::borrar(string dilit, string path, string name){
+
+}
+
+// parametro add
+void fdisk::agregar(int add,char unit,string path,string name){    
+    //GUardo leo y guardo en mbr
+    FILE *archivo;
+    archivo=fopen(path.c_str(),"r");
+    MBR mbr;
+    fseek(archivo,0, SEEK_SET);
+    fread(&mbr, sizeof(mbr), 1, archivo); 
+    fclose(archivo);
+
+    vector<int>inicio;
+    vector<int>fin;
+    int nsize;
+    if (unit=='b')//nuevo tamaño en bytes
+        nsize=add;
+    else if(unit=='k')//kilobyte a bytes
+        nsize=add*1024;
+    else if(unit=='m')//megabyte a bytes
+        nsize=add*1024*1024; 
+    int restante=mbr.tamanio-nsize; //espacio total disco
+     for (size_t i = 0; i < 4; i++){ //si hay espacio en la particion
+        restante-=mbr.particiones[i].part_size;
+    }
+    if(restante>0){//si hay espacio en el disco para agregar
+        for (size_t i = 0; i < 4; i++){
+            if(mbr.particiones[i].part_name==name){//la particion a la cual hay que aumentar
+                if ((mbr.particiones[i].part_size+nsize)>0){ //se verifica que si se resta su tamaño sea mayor
+                    mbr.particiones[i].part_size+=nsize;//le agrego a su tamaño el add
+                    for (size_t j = i+1; j < 4; j++){
+                        mbr.particiones[j].part_start+=nsize; //el inicio de las siguientes particiones aunmenta
+                    }
+                    archivo=fopen(path.c_str(),"r+"); //se abre el archivo para escribir y se guarda 
+                    fseek(archivo,0, SEEK_SET);
+                    fwrite(&mbr, sizeof(MBR), 1, archivo); 
+                    fclose(archivo);
+                    break;
+                }
+                else{
+                    cout<<"Error lo maximo que se le puede quitar es: "+to_string(mbr.particiones[i].part_size-1)+" bytes y esta intentando quitar: "+to_string(nsize*-1)+" bytes";
+                }
+            }
+        }
+    }else{
+        cout<<"Error lo maximo que se puede agregar son: "+ to_string(restante*-1)+" bytes y esta intentando agregar: "+to_string(nsize)+" bytes";
+    }
+    
 }
 
 //crear particiones logicas
@@ -129,7 +184,7 @@ void fdisk::logica(int inicio, int tamanio,string path,int size,string fit,strin
 
 }
 
-//falta add, mov, delete    -- crear particiones extendidas y primarias
+// crear particiones extendidas y primarias
 void fdisk::crear(int size, char unit, string path,char type, string fit, string dilit, string name,int add, string mov){
     if(size>0){
         FILE *archivo;  // Se abre el archivo
@@ -146,8 +201,6 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
             nsize=size*1024;
         else if(unit=='m')//megabyte a bytes
             nsize=size*1024*1024; 
-
-        
         
         for(size_t i=0; i <4;i++){ //busco particion disponible
             if (type=='p'){//Es una particion primaria
@@ -173,7 +226,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
             else if(type=='e'){ //Es una extendida
                 bool sepuede=true;
                 for (size_t j = 0; j < 4; j++){// hay una extendida?
-                    if ( mbr.particiones[j].part_type=='e'){
+                    if (mbr.particiones[j].part_type=='e'){
                         cout<<"ERROR no se puede tener dos particiones extendidas"<<endl;
                         sepuede=false;
                     }
@@ -210,8 +263,11 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
             }
         }
     }
+    else if(add!=0){
+        agregar(add,unit,path,name);
+    }
     else   
-        cout<<"ERRROR: size <=0"<<endl;
+        cout<<"ERRROR"<<endl;
 
     /*
     //ver las particiones
@@ -232,7 +288,6 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
         cout<<mbr.particiones[i].part_status<<endl;
         cout<<mbr.particiones[i].part_type<<endl;
         cout<<"--------------------------------------------------------"<<endl;
-      
     }      
     */
 }

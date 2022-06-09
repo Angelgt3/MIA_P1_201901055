@@ -42,7 +42,7 @@ void mkdisk::crear(int size,string path,string name){
         //Le doy todos los permisos
         acceso(path);
         //creando binario
-        int tam=size*1024;
+        int tam=size*1024;//lo pasamos a megabyte
         comand = "dd if=/dev/zero of="+ path+ name +" count=1024 bs="+to_string(tam);
         system(comand.c_str());
         CrearMBR(tam,path,name);
@@ -58,7 +58,7 @@ void mkdisk::CrearMBR(int tam,string path,string name){
     //Asignar valores mbr
     MBR mbr;
     mbr.fecha_creacion=fecha;
-    mbr.tamanio=tam;
+    mbr.tamanio=tam*1024;//lo pasamos a megabytes
     mbr.disk_signature=valor;
 
     //escribir el mbr en el disco

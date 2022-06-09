@@ -12,6 +12,7 @@
 #include "fdisk.cpp"
 #include "mount.cpp"
 #include "unmount.cpp"
+#include "reportes.cpp"
 #include "estructuras.h"
 
 #include <stdio.h>
@@ -93,7 +94,7 @@ void analizar::Comandos(string comand,string para[]){
             rmdisk *rmd=new rmdisk(path);
             rmd->~rmdisk();
         }else if (comand=="fdisk"){ //fdisk
-            int size,add;
+            int size=0,add=0;
             char unit='k',type='p';
             string path,fit="wf",dilit,name,mov;
             for(size_t i=0; i<20 ;i++){  
@@ -412,28 +413,29 @@ void analizar::Comandos(string comand,string para[]){
             }
         }
         else if(comand=="rep"){ //rep
+            string name,path,id;
             for(size_t i=0; i <20;i++){     
-
+                if (para[i]=="") //se sale si ya no viene mas atributos u.u
+                    break;
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());
-
-                if (parametro=="") //se sale si ya no viene mas atributos u.u
-                    break;
-                else if (parametro=="$name"){
-
+                if (parametro=="$name"){
+                    name=valor;                    
                 }
                 else if (parametro=="$path"){
-
+                    path=valor.substr(1,valor.length()-2);
                 }
                 else if (parametro=="$id"){
-
+                    id=valor;
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;
                 //cout<<"parametro: "+parametro<<endl;
                 //cout<<"valor: "+valor<<endl;
             }
+            reportes *repp=new reportes(name,path,id);
+            repp->~reportes();
         }
         else
             cout<<"COMANDO NO RECONOCIDO"<<endl;
