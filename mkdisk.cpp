@@ -84,11 +84,6 @@ void mkdisk::CrearMBR(int tam,string path,string name){
     mbr.tamanio=tam;
     mbr.disk_signature=valor;
 
-    cout<<""<<endl;
-    cout<<mbr.fecha_creacion<<endl;
-    cout<<mbr.disk_signature<<endl;
-    cout<<mbr.tamanio<<endl;
-    
     //escribir el mbr en el disco
     FILE *archivo;
     archivo=fopen((path+name).c_str(),"r+");

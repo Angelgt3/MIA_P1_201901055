@@ -8,6 +8,7 @@
 #include "mkfile.cpp"
 #include "mkdisk.cpp"
 #include "rmdisk.cpp"
+#include "fdisk.cpp"
 
 #include <stdio.h>
 
@@ -65,6 +66,7 @@ void analizar::Comandos(string comand,string para[]){
             mkdisk *mkd=new mkdisk();
             mkd->crear(size,path,name);
             discos.push_back(*mkd);
+            mkd->~mkdisk();
         }else if(comand=="rmdisk"){ //rmdisk
             string path;
             
@@ -91,15 +93,15 @@ void analizar::Comandos(string comand,string para[]){
             int size,add;
             char unit='k',type='p';
             string path,fit="wf",dilit,name,mov;
-            for(size_t i=0; i <20;i++){   
-
+            for(size_t i=0; i<20 ;i++){  
+                cout<<para[i]<<endl;
+                if(para[i]=="")
+                    break;
+                    
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
-                string valor=para[i].substr(pos+2,para[i].length());
-
-                if (parametro=="") //se sale si ya no viene mas atributos u.u
-                    break;
-                else if (parametro=="$size"){
+                string valor=para[i].substr(pos+2,para[i].length());   
+                if (parametro=="$size"){
                     if(stoi(valor)>0)
                         size=stoi(valor);
                     else
@@ -128,7 +130,7 @@ void analizar::Comandos(string comand,string para[]){
                 }
                 else if (parametro=="@delete"){
                     if(valor=="fast" || valor=="full" )
-                        fit=valor;
+                        dilit=valor;
                     else
                         cout<<"ERROR: El valor de delete no cumple los requerimientos";
                 }
@@ -146,6 +148,9 @@ void analizar::Comandos(string comand,string para[]){
                 cout<<"parametro: "+parametro<<endl;
                 cout<<"valor: "+valor<<endl;
             }
+            fdisk *fd=new fdisk();
+            fd->crear(size,unit,path,type,fit,dilit,name,add,mov);
+            
         }else if(comand=="mount"){ //mount
             for(size_t i=0; i <20;i++){    
 
@@ -410,6 +415,7 @@ void analizar::Comandos(string comand,string para[]){
 //separo las lineas por espacios
 void analizar::SE_linea(string linea){
     string comand="",palabra,parametros[20];
+    for (size_t l = 0; l < 20; l++){ parametros[l]="";}
     stringstream nline(linea);
     int cont=0;
     while (getline(nline, palabra,' ')){
