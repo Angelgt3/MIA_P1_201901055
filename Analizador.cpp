@@ -5,6 +5,7 @@
 #include <fstream>
 #include <bits/stdc++.h>
 
+
 #include "mkfile.cpp"
 #include "mkdisk.cpp"
 #include "rmdisk.cpp"
@@ -174,11 +175,17 @@ void analizar::Comandos(string comand,string para[]){
                 //cout<<"valor: "+valor<<endl;
             } 
             if(path=="" && name==""){ //mount sin  parametros muestra las particiones montadas
-
-            }else{
+                cout<<""<<endl;
+                cout<<"-----------------------------PARTICIONES MONTADAS------------------------------"<<endl;
+                cout<<""<<endl;
+                for (size_t i = 0; i < misdiscos.size(); i++){
+                    cout<<"id=>"+misdiscos[i].id+" $path=>"+misdiscos[i].path+" $name=>"+misdiscos[i].name<<endl;
+                }
+                cout<<""<<endl;
+                cout<<"-------------------------------------------------------------------------------"<<endl;
+                cout<<""<<endl;
+            }else{// mount con parametros
                 mount *mou=new mount(); //creo el objeto mount
-                //mou->montar(temp);
-                //discos.push_back(temp);
                 Discos temp;
                 temp=mou->montar(path,name,misdiscos);
                 mou->~mount();//destruyo el objeto
@@ -196,11 +203,14 @@ void analizar::Comandos(string comand,string para[]){
                 int pos=para[i].find("=>"); 
                 string parametro=para[i].substr(0,pos);
                 string valor=para[i].substr(pos+2,para[i].length());
-
-                if (parametro=="$id#"){
-
-
-
+                if (parametro=="$id"+to_string((i+1))){ //$id#
+                    for (size_t i = 0; i < misdiscos.size(); i++){ //recorro la lista de las particiones montadas
+                        if(misdiscos[i].id==valor){ //encuentro cual hay que desmontar
+                            misdiscos.erase(misdiscos.begin()+i); //lo elimino de la lista
+                            break;
+                        }
+                    }
+                    
                 }
                 else
                     cout<<"PARAMETRO NO RECONOCIDO"<<endl;

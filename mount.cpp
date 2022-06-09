@@ -46,7 +46,7 @@ Discos mount::buscar(vector<Discos>tdisks,string path,string name,Discos dis){
         }
     }
     dis.id="vd"+letra+to_string(num);
-    cout<<"mount: "+ dis.id <<endl;
+    //cout<<"mount: "+ dis.id <<endl;
     return dis;
 }
 
