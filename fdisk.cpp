@@ -76,110 +76,77 @@ void fdisk::agregar(int add,char unit,string path,string name){
 }
 
 //crear particiones logicas
-void fdisk::logica(int inicio, int tamanio,string path,int size,string fit,string name){
+void fdisk::logica(int start, int tamanio,string path,int size,string fit,string name){
     FILE *archivo;
     archivo=fopen((path).c_str(),"r");
     EBR ebr;
-    fseek(archivo,inicio,SEEK_SET);
+    fseek(archivo,sizeof(MBR),SEEK_SET);
     fread(&ebr, sizeof(ebr), 1, archivo); // Guarda el ebr del archivo en "ebr"
     fclose(archivo);
-    if (ebr.part_next==0){ //si no hay ebr es 0 
+    
+    if (ebr.part_next==0){ //si no hay ebr es 0
         if (tamanio>size){ //hay espacio disponible
             //Se guarda todo los datos en la estructura
-            EBR newebr;
-            newebr.part_fit = fit[0];
-            strcpy(newebr.part_name, name.c_str());
-            newebr.part_next = -1;
-            newebr.part_size = tamanio;
-            newebr.part_start = inicio;
+            ebr.part_fit = fit[0];
+            strcpy(ebr.part_name, name.c_str());
+            ebr.part_next = 1;
+            ebr.part_size = size;
+            ebr.part_start = start;
+
+            cout<<"---------------------"+to_string(sizeof(MBR))<<endl;
+            cout<<ebr.part_fit<<endl;
+            cout<<ebr.part_name<<endl;
+            cout<<ebr.part_next<<endl;
+            cout<<ebr.part_size<<endl;
+            cout<<ebr.part_start<<endl;
 
             // se guarda la estructura en el archivo
-            FILE *archivo;
             archivo=fopen(path.c_str(),"r+");
-            fseek(archivo,inicio, SEEK_SET);
-            fwrite(&newebr, sizeof(EBR), 1, archivo); // Guarda el mbr del archivo
+            fseek(archivo,sizeof(MBR), SEEK_SET);
+            fwrite(&ebr, sizeof(EBR), 1, archivo); // lo guardo en el archivo
             fclose(archivo);
         }
         else
             cout<<"ERROR: no hay suficiente espacio disponible"<<endl;
     }
-    else{ // Ya hay un ebr inicial
-        
-        list<int>inicios;
-        list<int>fin;
-        list<int>inter;
-        int siguiente = 0;
-        int ii =0 ;  
-        FILE *archivo;
-        archivo=fopen(path.c_str(),"r+");
-        while(siguiente == 0){
-            inicios.push_back(ebr.part_start); // Inicio
-            fin.push_back(ebr.part_start + ebr.part_size);// Fin
-            ii++;
-            if (ebr.part_next != -1){ // si hay mas particiones
-                siguiente = fseek(archivo,ebr.part_next,SEEK_SET);// voy al inicio del siguiente ebr
-                fread(&ebr, sizeof(ebr), 1, archivo); // leo lo que hay en el espacio
-                
-            }else{siguiente = -1;}
+    else{
+        int ocupado=ebr.part_size;
+        int pos=sizeof(MBR);
+        do{
+            pos+=sizeof(EBR);
+            FILE *arch2;
+            arch2=fopen((path).c_str(),"r");
+            EBR ebr2;
+            fseek(arch2,pos,SEEK_SET);
+            fread(&ebr2, sizeof(ebr2), 1, arch2); // Guarda el ebr del archivo en "ebr"
+            fclose(arch2);
+            ebr.part_next=ebr2.part_next;
+            ebr.part_start=ebr.part_start+ebr.part_size;
+            ocupado+=ebr.part_size;
+        }while (ebr.part_next==1);
+        if (tamanio>ocupado){        
+            //Se guarda todo los datos en la estructura
+            ebr.part_fit = fit[0];
+            strcpy(ebr.part_name, name.c_str());
+            ebr.part_next = 1;
+            ebr.part_size = size;
+            
+            cout<<"---------------------"+to_string(pos)<<endl;
+            cout<<ebr.part_fit<<endl;
+            cout<<ebr.part_name<<endl;
+            cout<<ebr.part_next<<endl;
+            cout<<ebr.part_size<<endl;
+            cout<<ebr.part_start<<endl;
+
+            // se guarda la estructura en el archivo
+            archivo=fopen(path.c_str(),"r+");
+            fseek(archivo,pos, SEEK_SET);
+            fwrite(&ebr, sizeof(EBR), 1, archivo); // lo guardo en el archivo
+            fclose(archivo);
         }
-        
-        fclose(archivo); // Se cierra el archivo
-        inicios.push_back(tamanio); // Inicio
-        fin.push_back(tamanio);// Fin
-        list<int>::iterator it = inicios.begin();
-        list<int>::iterator ti = fin.begin();
-        *it++;
-        for(int i= 0; i<ii; i++){
-            inter.push_back((*it++) - (*ti++)); // inicio - fin
-        }
-        list<int>::iterator iti = inter.begin();
-        it = inicios.begin();
-        ti = fin.begin();
-        for(int i= 0; i<ii; i++){
-            int in = *it++;
-            int fi = *ti++;
-            if ((*iti++)>size){
-                inicio = fi + 1;
-                archivo=fopen(path.c_str(),"r");
-                EBR rbe;
 
-                fseek(archivo,in,SEEK_SET);
-                fread(&rbe, sizeof(rbe), 1, archivo); // Guarda el ebr del archivo en "rbe"
-                rbe.part_next = inicio;
-                fclose(archivo); // Se cierra el archivo
-
-                archivo=fopen(path.c_str(),"r+");
-                fseek(archivo,in, SEEK_SET);
-                fwrite(&ebr, sizeof(EBR), 1, archivo); // Guarda el ebr del archivo
-                fclose(archivo);
-
-                EBR nuevo;
-                nuevo.part_fit = fit[0];
-                strcpy(nuevo.part_name, name.c_str());
-                nuevo.part_next = -1;
-                nuevo.part_size = size;
-                nuevo.part_start = inicio;
-
-                FILE *arch;
-                arch=fopen(path.c_str(),"r+");
-                fseek(arch,inicio, SEEK_SET);
-                fwrite(&nuevo, sizeof(EBR), 1, arch); // Guarda el ebr del archivo
-                fclose(arch);
-                break;
-            }
-        }
-        
-        EBR n;
-        FILE *arcs;
-        arcs=fopen(path.c_str(),"rb+");
-        
-        fseek(arcs,inicio, SEEK_SET);
-        fread(&n, sizeof(EBR), 1, arcs); 
-        fclose(arcs);
-        
-        //cout << n.part_next <<endl;
-        //cout << n.part_start <<endl;
     }
+    
     
 
 }
@@ -213,7 +180,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
                     if(i==0)//si es la primera particion empieza en 0
                         mbr.particiones[i].part_start=0;
                     else
-                        mbr.particiones[i].part_start=mbr.particiones[i-1].part_start+mbr.particiones[i-1].part_size;
+                        mbr.particiones[i].part_start=mbr.particiones[i-1].part_start+mbr.particiones[i-1].part_size+1;
 
                     // Guarda el mbr del archivo
                     archivo=fopen(path.c_str(),"r+");
@@ -242,7 +209,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
                             if(k==0)//si es la primera particion empieza en 0
                                 mbr.particiones[k].part_start=0;
                             else
-                                mbr.particiones[k].part_start=mbr.particiones[k-1].part_start+mbr.particiones[k-1].part_size;
+                                mbr.particiones[k].part_start=mbr.particiones[k-1].part_start+mbr.particiones[k-1].part_size+1;
 
                             // Guarda el mbr del archivo
                             archivo=fopen(path.c_str(),"r+");
@@ -257,7 +224,7 @@ void fdisk::crear(int size, char unit, string path,char type, string fit, string
                 break;
             }
             else{
-                if(mbr.particiones[i].part_type=='e'){//si hay particion extendida
+                if(mbr.particiones[i].part_type=='e' or mbr.particiones[i].part_type=='a'){//si hay particion extendida
                     logica(mbr.particiones[i].part_start,mbr.particiones[i].part_size,path,nsize,fit,name);//Crear logica
                 }
             }

@@ -29,8 +29,8 @@ typedef struct {
 typedef struct {
     char part_fit;
     int part_start;
-    int part_size;
-    int part_next;
+    int part_size=0;
+    int part_next=-1;
     char part_name[16];
 }EBR; //Estructura de los ebr
 

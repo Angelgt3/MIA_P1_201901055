@@ -44,14 +44,72 @@ void reportes::disk(string path,string id){
         else if(mbr.particiones[i].part_type=='p'){
             contenido+="|PRIMARIA";
         }
-        else if(mbr.particiones[i].part_type=='e'){
-            contenido+="|{EXTENDIDA|{EBR|A|EBR|B}";
-            //ebrs
-            contenido+="}";
+        else if(mbr.particiones[i].part_type=='e' or mbr.particiones[i].part_type=='a'){
+            contenido+="|{EXTENDIDA|{";
+            
+            FILE *archivo;
+            archivo=fopen((path+id).c_str(),"r");
+            EBR ebr;
+            fseek(archivo,sizeof(MBR),SEEK_SET);
+            fread(&ebr, sizeof(ebr), 1, archivo); // Guarda el ebr del archivo en "ebr"
+            fclose(archivo);
+
+            if (ebr.part_next==0){ //si no hay ebr es 0
+                archivo=fopen((path+id).c_str(),"r+");
+                fseek(archivo,sizeof(MBR), SEEK_SET);
+                fread(&ebr, sizeof(EBR), 1, archivo); // lo guardo en el archivo
+                fclose(archivo);
+                
+                contenido+="EBR|LIBRE|";
+                
+                /*
+                cout<<"---------------------"+to_string(sizeof(MBR))<<endl;
+                cout<<ebr.part_fit<<endl;
+                cout<<ebr.part_name<<endl;
+                cout<<ebr.part_next<<endl;
+                cout<<ebr.part_size<<endl;
+                cout<<ebr.part_start<<endl;
+                */
+
+            }
+            else{
+                int pos=sizeof(MBR);
+                do{
+                    pos+=sizeof(EBR);
+                    if (ebr.part_size>0)
+                        contenido+="EBR|LOGICA|";
+                    else
+                        contenido+="EBR|LIBRE|";
+                    /*
+                    cout<<"---------------------"+to_string(pos)<<endl;
+                    cout<<ebr.part_fit<<endl;
+                    cout<<ebr.part_name<<endl;
+                    cout<<ebr.part_next<<endl;
+                    cout<<ebr.part_size<<endl;
+                    cout<<ebr.part_start<<endl;
+                    */
+                    FILE *arch2;
+                    arch2=fopen((path+id).c_str(),"r");
+                    EBR ebr2;
+                    fseek(arch2,pos,SEEK_SET);
+                    fread(&ebr2, sizeof(ebr2), 1, arch2); // Guarda el ebr del archivo en "ebr"
+                    fclose(arch2);
+                    ebr=ebr2;
+
+                }while (ebr.part_next==1);
+                   
+                    // se guarda la estructura en el archivo
+                    archivo=fopen((path+id).c_str(),"r+");
+                    fseek(archivo,pos, SEEK_SET);
+                    fread(&ebr, sizeof(EBR), 1, archivo); // lo guardo en el archivo
+                    fclose(archivo);
+                }
+
+           
+            contenido+="}}";
         }
     }
     contenido+="\"\n\t];\n}";
-
     ofstream file;
     file.open(path+"rep_disk.dot");
     file << contenido;
