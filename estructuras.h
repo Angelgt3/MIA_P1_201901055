@@ -12,10 +12,10 @@ using namespace std;
 
 typedef struct {
     char part_status='l'; //l=libre , o=ocupada, m=montada
-    char part_type;
-    char part_fit;
-    int part_start;
-    int part_size;
+    char part_type='0';
+    char part_fit='0';
+    int part_start=-1;
+    int part_size=-1;
     char part_name[16];
 }PARTITION; //Estructura de las particiones
 
